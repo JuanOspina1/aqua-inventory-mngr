@@ -9,9 +9,60 @@
     <title>Medicine Reminder</title>
   </head>
   <body>
-    <form class="medicine__form">
-      <label for="medname">Medication Name</label><br />
-      <input type="text" class="medname" name="medname" /><br />
+    <!-- Button to display the new medicine form -->
+    <label class="form__label">Add a New Medicine!</label><br />
+    <button class="display__btn">Show Form</button>
+
+    <!-- New Medicine Form -->
+    <form class="medicine__form hidden">
+      <div>
+        <label class="form__label">Type</label><br />
+        <select class="form__input form__input--type">
+          <option value="pill">Pill</option>
+          <option value="liquid">Liquid</option>
+          <option value="spray">Spray</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="form__label">Medication Name</label><br />
+        <input
+          type="text"
+          class="med__name"
+          name="med__name"
+          placeholder="Advil"
+        /><br />
+      </div>
+
+      <div>
+        <label class="form__label">Medications Per Day</label><br />
+        <input
+          type="text"
+          class="med__morning__servings"
+          name="med__morning__servings"
+          placeholder="1 In the morning"
+        /><br />
+        <input
+          type="text"
+          class="med__evening__servings"
+          name="med__evening__servings"
+          placeholder="2 in the evening"
+        /><br />
+      </div>
+
+      <div>
+        <label class="form__label">Frequency</label><br />
+        <select class="form__input form__input--frequency">
+          <option value="daily">Daily</option>
+          <option value="weekly">Weekly</option>
+          <option value="bi-weekly">Bi-Weekly</option>
+          <option value="monthly">Monthly</option>
+        </select>
+      </div>
+
+      <!-- Need to add a "start date" selector -->
+
+      <button class="form__btn">Submit</button>
     </form>
   </body>
 </html>
