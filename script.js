@@ -2,12 +2,13 @@
 class MedicineReminder {
   id = (Date.now() + "").slice(-10);
 
-  constructor(type, name, morning, evening, frequency) {
+  constructor(type, name, morning, evening, frequency, startDate) {
     this.type = type;
     this.name = name;
     this.morning = morning;
     this.evening = evening;
     this.frequency = frequency;
+    this.startDate = startDate;
   }
   // In the future I hope to add specific new classes based on the type of medication
 }
@@ -19,6 +20,7 @@ const medName = document.querySelector(".med__name");
 const medPerDayMorning = document.querySelector(".med__morning__servings");
 const medPerDayEvening = document.querySelector(".med__evening__servings");
 const medFrequency = document.querySelector(".form__input--frequency");
+const medStartDate = document.querySelector(".med__start__date");
 
 class App {
   // Protected Variable
@@ -26,7 +28,7 @@ class App {
 
   constructor() {
     //Get data from local storage
-    // this._getLocalStorage();
+    this._getLocalStorage();
 
     //Attach event handlers
     medForm.addEventListener("submit", this._submitMedName.bind(this));
@@ -40,10 +42,18 @@ class App {
     const morning = medPerDayMorning.value;
     const evening = medPerDayEvening.value;
     const frequency = medFrequency.value;
-    console.log(type, name, morning, evening, frequency);
+    const startDate = medStartDate.value;
+    console.log(type, name, morning, evening, frequency, startDate);
 
     let medicine;
-    medicine = new MedicineReminder(type, name, morning, evening, frequency);
+    medicine = new MedicineReminder(
+      type,
+      name,
+      morning,
+      evening,
+      frequency,
+      startDate
+    );
 
     // Push the new medicine into the reminders array
     this.#medReminders.push(medicine);
@@ -51,6 +61,8 @@ class App {
     this._emptyForm();
 
     console.log(this.#medReminders);
+
+    this._setLocalStorage();
   };
 
   _emptyForm = function () {
@@ -65,6 +77,17 @@ class App {
     medName.focus();
   };
 
-  _createMedReminder = function () {};
+  _setLocalStorage() {
+    localStorage.setItem("medicines", JSON.stringify(this.#medReminders));
+  }
+
+  _getLocalStorage() {
+    const data = JSON.parse(localStorage.getItem("medicines"));
+    // console.log(data);
+
+    if (!data) return;
+
+    this.#medReminders = data;
+  }
 }
 const app = new App();

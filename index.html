@@ -9,60 +9,88 @@
     <title>Medicine Reminder</title>
   </head>
   <body>
-    <!-- Button to display the new medicine form -->
-    <label class="form__label">Add a New Medicine!</label><br />
-    <button class="display__btn">Show Form</button>
+    <div class="sidebar">
+      <ul class="medicine__input">
+        <!-- Button to display the new medicine form -->
+        <label class="form__label">Add a New Medicine!</label
+        ><br />
+        <button class="display__btn">Show Form</button>
 
-    <!-- New Medicine Form -->
-    <form class="medicine__form hidden">
-      <div>
-        <label class="form__label">Type</label><br />
-        <select class="form__input form__input--type">
-          <option value="pill">Pill</option>
-          <option value="liquid">Liquid</option>
-          <option value="spray">Spray</option>
-        </select>
-      </div>
+        <!-- New Medicine Form -->
+        <form class="medicine__form hidden">
+          <div class="form__row">
+            <label class="form__label">Medicine Type</label>
+          </div>
+          <div class="form__row">
+            <select class="form__input form__input--type">
+              <option value="pill">Pill</option>
+              <option value="liquid">Liquid</option>
+              <option value="spray">Spray</option>
+            </select>
+          </div>
 
-      <div>
-        <label class="form__label">Medication Name</label><br />
-        <input
-          type="text"
-          class="med__name"
-          name="med__name"
-          placeholder="Advil"
-        /><br />
-      </div>
+          <div class="form__row">
+            <label class="form__label">Medication Name</label>
+          </div>
+          <div class="form__row">
+            <input
+              type="text"
+              class="med__name form__input"
+              name="med__name"
+              placeholder="Advil"
+            />
+          </div>
 
-      <div>
-        <label class="form__label">Medications Per Day</label><br />
-        <input
-          type="text"
-          class="med__morning__servings"
-          name="med__morning__servings"
-          placeholder="1 In the morning"
-        /><br />
-        <input
-          type="text"
-          class="med__evening__servings"
-          name="med__evening__servings"
-          placeholder="2 in the evening"
-        /><br />
-      </div>
+          <!-- Need to format these 2 input fields for 1 label in a better way -->
+          <div class="form__row">
+            <label class="form__label">Medications Per Day</label>
+          </div>
+          <div class="form__row">
+            <input
+              type="text"
+              class="med__morning__servings form__input"
+              name="med__morning__servings"
+              placeholder="1 In the morning"
+            />
 
-      <div>
-        <label class="form__label">Frequency</label><br />
-        <select class="form__input form__input--frequency">
-          <option value="daily">Daily</option>
-          <option value="weekly">Weekly</option>
-          <option value="bi-weekly">Bi-Weekly</option>
-          <option value="monthly">Monthly</option>
-        </select>
-      </div>
+            <input
+              type="text"
+              class="med__evening__servings form__input"
+              name="med__evening__servings"
+              placeholder="2 in the evening"
+            />
+          </div>
 
-      <!-- Need to add a "start date" selector -->
+          <div class="form__row">
+            <label class="form__label">Frequency</label>
+          </div>
+          <div class="form__row">
+            <select class="form__input form__input--frequency">
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="bi-weekly">Bi-Weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
+          </div>
 
-      <button class="form__btn">Submit</button>
-    </form>
+          <!-- Need to add a "start date" selector -->
+          <div class="form__row">
+            <label class="form__label" for="start">Start date:</label>
+          </div>
+          <div class="form__row">
+            <input
+              type="date"
+              id="start"
+              name="trip-start"
+              value=""
+              min="2018-01-01"
+              max=""
+              class="med__start__date form__input"
+            />
+          </div>
+          <button class="form__btn">Submit</button>
+        </form>
+      </ul>
+    </div>
   </body>
 </html>
