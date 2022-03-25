@@ -15,12 +15,14 @@ class MedicineReminder {
 
 const medForm = document.querySelector(".medicine__form");
 const showBtn = document.querySelector(".display__btn");
+const submitBtn = document.querySelector(".submit__form__btn");
 const medType = document.querySelector(".form__input--type");
 const medName = document.querySelector(".med__name");
 const medPerDayMorning = document.querySelector(".med__morning__servings");
 const medPerDayEvening = document.querySelector(".med__evening__servings");
 const medFrequency = document.querySelector(".form__input--frequency");
 const medStartDate = document.querySelector(".med__start__date");
+const medContainer = document.querySelector(".container");
 
 class App {
   // Protected Variable
@@ -31,19 +33,24 @@ class App {
     this._getLocalStorage();
 
     //Attach event handlers
-    medForm.addEventListener("submit", this._submitMedName.bind(this));
+    submitBtn.addEventListener("click", this._submitMedName.bind(this));
     showBtn.addEventListener("click", this._showForm.bind(this));
   }
 
   _submitMedName = function (e) {
     e.preventDefault();
     const type = medType.value;
+    //Need to capitalize this input
     const name = medName.value;
+    // Need to confirm that these are whole, positive numbers
     const morning = medPerDayMorning.value;
     const evening = medPerDayEvening.value;
+
     const frequency = medFrequency.value;
     const startDate = medStartDate.value;
     console.log(type, name, morning, evening, frequency, startDate);
+
+    // Need to verify inputs
 
     let medicine;
     medicine = new MedicineReminder(
@@ -60,10 +67,57 @@ class App {
 
     this._emptyForm();
 
+    this._renderNewMed(medicine);
     console.log(this.#medReminders);
 
     this._setLocalStorage();
   };
+
+  _renderNewMed(medicine) {
+    let html = `
+    <div class="medicines">
+        <article class="medicine">
+          <img class="country__img" src="" />
+          <div class="medicine__data">
+            <h3 class="medicine__name">${medicine.name}</h3>
+            <h4 class="country__type">Type: ${medicine.type}</h4>
+            <p class="medicine__row"><span>⏲</span>Frequency: ${
+              medicine.frequency
+            }</p>
+            <p class="medicine__row"><span>💊</span>Total Meds Per Day: ${
+              medicine.morning + medicine.evening
+            }</p>
+            <p class="medicine__row"><span>💰</span>Start Date: ${
+              medicine.startDate
+            }</p>
+            <input
+              type="checkbox"
+              class="morning__dose checkbox"
+              name="morning__dose"
+              value=""
+            />
+            <label for="morning__dose"> Morning Dose ${
+              medicine.morning
+            } </label><br />
+            <input
+              type="checkbox"
+              class="morning__dose checkbox"
+              name="evening__dose"
+              value=""
+            />
+            <label for="evening__dose"> Evening Dose ${
+              medicine.evening
+            }</label><br />
+            <button class="single__delete__btn">Delete</button>
+          </div>
+        </article>
+      </div>
+    `;
+    medContainer.insertAdjacentHTML("afterend", html);
+
+    const singleDeleteBtn = document.querySelector(".single__delete__btn");
+    singleDeleteBtn.addEventListener("click", this._deleteSingle.bind(this));
+  }
 
   _emptyForm = function () {
     medName.value = "";
@@ -77,6 +131,9 @@ class App {
     medName.focus();
   };
 
+  _deleteSingle(e) {
+    e.preventDefault();
+  }
   _setLocalStorage() {
     localStorage.setItem("medicines", JSON.stringify(this.#medReminders));
   }
@@ -88,6 +145,9 @@ class App {
     if (!data) return;
 
     this.#medReminders = data;
+    this.#medReminders.forEach((med) => {
+      this._renderNewMed(med);
+    });
   }
 }
 const app = new App();
