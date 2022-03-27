@@ -85,7 +85,7 @@ class App {
               medicine.frequency
             }</p>
             <p class="medicine__row"><span>💊</span>Total Meds Per Day: ${
-              medicine.morning + medicine.evening
+              +medicine.morning + +medicine.evening
             }</p>
             <p class="medicine__row"><span>💰</span>Start Date: ${
               medicine.startDate
