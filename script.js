@@ -2,13 +2,14 @@
 class MedicineReminder {
   id = (Date.now() + "").slice(-10);
 
-  constructor(type, name, morning, evening, frequency, startDate) {
+  constructor(type, name, morning, evening, frequency, startDate, endDate) {
     this.type = type;
     this.name = name;
     this.morning = morning;
     this.evening = evening;
     this.frequency = frequency;
     this.startDate = startDate;
+    this.endDate = endDate;
   }
   // In the future I hope to add specific new classes based on the type of medication
 }
@@ -22,6 +23,7 @@ const medPerDayMorning = document.querySelector(".med__morning__servings");
 const medPerDayEvening = document.querySelector(".med__evening__servings");
 const medFrequency = document.querySelector(".form__input--frequency");
 const medStartDate = document.querySelector(".med__start__date");
+const medEndDate = document.querySelector(".med__end__date");
 const medContainer = document.querySelector(".container");
 
 class App {
@@ -48,7 +50,9 @@ class App {
 
     const frequency = medFrequency.value;
     const startDate = medStartDate.value;
-    console.log(type, name, morning, evening, frequency, startDate);
+    const endDate = medEndDate.value;
+
+    console.log(type, name, morning, evening, frequency, startDate, endDate);
 
     // Need to verify inputs
 
@@ -59,7 +63,8 @@ class App {
       morning,
       evening,
       frequency,
-      startDate
+      startDate,
+      endDate
     );
 
     // Push the new medicine into the reminders array
@@ -80,15 +85,15 @@ class App {
           <img class="country__img" src="" />
           <div class="medicine__data">
             <h3 class="medicine__name">${medicine.name}</h3>
-            <h4 class="country__type">Type: ${medicine.type}</h4>
-            <p class="medicine__row"><span>⏲</span>Frequency: ${
-              medicine.frequency
-            }</p>
-            <p class="medicine__row"><span>💊</span>Total Meds Per Day: ${
+            <h4 class="country__type">Type: <br/> ${medicine.type}</h4>
+            <p class="medicine__row">Frequency: <br/> ${medicine.frequency}</p>
+            <p class="medicine__row">Total Meds Per Day: <br/>${
               medicine.morning + medicine.evening
             }</p>
-            <p class="medicine__row"><span>💰</span>Start Date: ${
-              medicine.startDate
+            <p class="medicine__row">Start Date: <br/>${medicine.startDate}</p>
+
+            <p class="medicine__row">End or Refill Date: <br/> ${
+              medicine.endDate
             }</p>
             <input
               type="checkbox"
@@ -96,7 +101,7 @@ class App {
               name="morning__dose"
               value=""
             />
-            <label for="morning__dose"> Morning Dose ${
+            <label for="morning__dose"> Morning Dose <br/>${
               medicine.morning
             } </label><br />
             <input
@@ -105,7 +110,7 @@ class App {
               name="evening__dose"
               value=""
             />
-            <label for="evening__dose"> Evening Dose ${
+            <label for="evening__dose"> Evening Dose <br/>${
               medicine.evening
             }</label><br />
             <button class="single__delete__btn">Delete</button>
@@ -129,6 +134,7 @@ class App {
   _showForm = function () {
     medForm.classList.remove("hidden");
     medName.focus();
+    console.log("clicked");
   };
 
   _deleteSingle(e) {

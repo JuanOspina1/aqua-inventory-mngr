@@ -101,7 +101,6 @@ body {
   transition: all 0.2s;
 }
 
-/* I do not like how this looks with the input fields */
 .form__row {
   display: flex;
   align-items: center;
