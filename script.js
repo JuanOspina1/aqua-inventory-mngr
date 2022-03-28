@@ -53,11 +53,18 @@ class App {
     const morning = +medPerDayMorning.value;
     const evening = +medPerDayEvening.value;
 
-    const frequency = medFrequency.value;
-    const startDate = medStartDate.value;
-    const endDate = medEndDate.value;
+    const frequency = this._titleCase(medFrequency.value);
+    // convert these back to a string using the method below
+    const startDateObj = new Date(medStartDate.value);
+    const endDateObj = new Date(medEndDate.value);
+
+    const startDate = this._formatDate(startDateObj);
+    const endDate = this._formatDate(endDateObj);
+
+    // const startDateStr = startDate.toString();
 
     console.log(type, name, morning, evening, frequency, startDate, endDate);
+    console.log(typeof startDate);
 
     // Need to verify inputs
 
@@ -170,23 +177,24 @@ class App {
     });
   }
 
+  _formatDate(dateObj) {
+    let date = dateObj.toString().slice(3, 15);
+    return date;
+  }
+
   _removeExpiredMeds() {
     // Need to find a way to compare today with the endDate in the object
     let today = new Date();
-    const months = {
-      Jan: 1,
-      Feb: 2,
-      Mar: 3,
-      Apr: 4,
-      May: 5,
-      Jun: 6,
-      Jul: 7,
-      Aug: 8,
-      Sep: 9,
-      Oct: 10,
-      Nov: 11,
-      Dec: 12,
-    };
+    let todayStr = this._formatDate(today);
+
+    this.#medReminders = this.#medReminders.filter(
+      (med) => med.endDate != todayStr
+    );
+    console.log(this.#medReminders);
+
+    this._setLocalStorage(this.#medReminders);
+
+    // I have 2 reload twice in order for the correct cards to poplate from the updated array
   }
 }
 const app = new App();
