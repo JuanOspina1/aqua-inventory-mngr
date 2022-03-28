@@ -124,6 +124,7 @@ class App {
     singleDeleteBtn.addEventListener("click", this._deleteSingle.bind(this));
   }
 
+  // test comment to commit
   _emptyForm = function () {
     medName.value = "";
     medPerDayMorning.value = "";
