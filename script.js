@@ -34,19 +34,24 @@ class App {
     //Get data from local storage
     this._getLocalStorage();
 
+    this._removeExpiredMeds();
+
     //Attach event handlers
     submitBtn.addEventListener("click", this._submitMedName.bind(this));
     showBtn.addEventListener("click", this._showForm.bind(this));
   }
 
   _submitMedName = function (e) {
+    const validInputs = (...inputs) =>
+      inputs.every((inp) => Number.isFinite(inp));
+
     e.preventDefault();
-    const type = medType.value;
+    const type = this._titleCase(medType.value);
     //Need to capitalize this input
-    const name = medName.value;
+    const name = this._titleCase(medName.value);
     // Need to confirm that these are whole, positive numbers
-    const morning = medPerDayMorning.value;
-    const evening = medPerDayEvening.value;
+    const morning = +medPerDayMorning.value;
+    const evening = +medPerDayEvening.value;
 
     const frequency = medFrequency.value;
     const startDate = medStartDate.value;
@@ -57,6 +62,9 @@ class App {
     // Need to verify inputs
 
     let medicine;
+
+    if (!validInputs(morning, evening))
+      return alert("Morning & evenings dosages need to be positive numbers!");
     medicine = new MedicineReminder(
       type,
       name,
@@ -80,28 +88,26 @@ class App {
 
   _renderNewMed(medicine) {
     let html = `
-    <div class="medicines">
+    <li>
         <article class="medicine">
-          <img class="country__img" src="" />
+          
           <div class="medicine__data">
             <h3 class="medicine__name">${medicine.name}</h3>
-            <h4 class="country__type">Type: <br/> ${medicine.type}</h4>
-            <p class="medicine__row">Frequency: <br/> ${medicine.frequency}</p>
-            <p class="medicine__row">Total Meds Per Day: <br/>${
+            <h4 class="country__type">Type: ${medicine.type}</h4>
+            <p class="medicine__row">Frequency: ${medicine.frequency}</p>
+            <p class="medicine__row">Total Meds Per Day: ${
               medicine.morning + medicine.evening
             }</p>
-            <p class="medicine__row">Start Date: <br/>${medicine.startDate}</p>
+            <p class="medicine__row">Start Date: ${medicine.startDate}</p>
 
-            <p class="medicine__row">End or Refill Date: <br/> ${
-              medicine.endDate
-            }</p>
+            <p class="medicine__row">End or Refill Date: ${medicine.endDate}</p>
             <input
               type="checkbox"
               class="morning__dose checkbox"
               name="morning__dose"
               value=""
             />
-            <label for="morning__dose"> Morning Dose <br/>${
+            <label for="morning__dose"> Morning Dose: ${
               medicine.morning
             } </label><br />
             <input
@@ -110,15 +116,15 @@ class App {
               name="evening__dose"
               value=""
             />
-            <label for="evening__dose"> Evening Dose <br/>${
+            <label for="evening__dose"> Evening Dose: ${
               medicine.evening
             }</label><br />
             <button class="single__delete__btn">Delete</button>
           </div>
         </article>
-      </div>
+        </li>
     `;
-    medContainer.insertAdjacentHTML("afterend", html);
+    medContainer.insertAdjacentHTML("afterbegin", html);
 
     const singleDeleteBtn = document.querySelector(".single__delete__btn");
     singleDeleteBtn.addEventListener("click", this._deleteSingle.bind(this));
@@ -129,18 +135,25 @@ class App {
     medName.value = "";
     medPerDayMorning.value = "";
     medPerDayEvening.value = "";
+    medStartDate.value = "";
+    medEndDate.value = "";
+
     medForm.classList.add("hidden");
   };
 
   _showForm = function () {
     medForm.classList.remove("hidden");
     medName.focus();
-    console.log("clicked");
   };
 
   _deleteSingle(e) {
     e.preventDefault();
   }
+
+  _titleCase(str) {
+    return str.toLowerCase().replace(/\b(\w)/g, (s) => s.toUpperCase());
+  }
+
   _setLocalStorage() {
     localStorage.setItem("medicines", JSON.stringify(this.#medReminders));
   }
@@ -155,6 +168,25 @@ class App {
     this.#medReminders.forEach((med) => {
       this._renderNewMed(med);
     });
+  }
+
+  _removeExpiredMeds() {
+    // Need to find a way to compare today with the endDate in the object
+    let today = new Date();
+    const months = {
+      Jan: 1,
+      Feb: 2,
+      Mar: 3,
+      Apr: 4,
+      May: 5,
+      Jun: 6,
+      Jul: 7,
+      Aug: 8,
+      Sep: 9,
+      Oct: 10,
+      Nov: 11,
+      Dec: 12,
+    };
   }
 }
 const app = new App();
