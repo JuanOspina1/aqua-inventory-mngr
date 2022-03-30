@@ -32,7 +32,7 @@ class App {
   #medReminders = [];
 
   constructor() {
-    //Get data from local storage - I need to update this so the object is create again using the class
+    //Get data from local storage - I need to update this so the object is create again using the class - expired meds are removed
     this._getLocalStorage();
 
     //Attach event handlers
@@ -182,76 +182,57 @@ class App {
 
   _getLocalStorage() {
     const data = JSON.parse(localStorage.getItem("medicines"));
-    console.log(data);
+    // console.log(data);
 
-    if (!data) return;
+    if (!data) return console.log("No objects to rebuild");
 
-    // Current
-    // this.#medReminders = data;
-    // this._removeExpiredMeds();
+    // Set array to empty
+    this.#medReminders = [];
 
-    // this.#medReminders.forEach((med) => {
-    //   this._renderNewMed(med);
-    // });
+    let rebuilt;
 
     data.forEach((med) => {
-      let rebuilt;
+      // Check for expired meds, then rebuild
+      let today = new Date();
+      let todayStr = this._formatDate(today);
 
-      const id = med.id;
-      const type = med.type;
-      const name = med.name;
-      const morning = med.morning;
-      const evening = med.evening;
-      const frequency = med.frequency;
-      const startDate = med.startDate;
-      const endDate = med.endDate;
+      if (med.endDate != todayStr) {
+        const id = med.id;
+        const type = med.type;
+        const name = med.name;
+        const morning = med.morning;
+        const evening = med.evening;
+        const frequency = med.frequency;
+        const startDate = med.startDate;
+        const endDate = med.endDate;
 
-      rebuilt = new MedicineReminder(
-        id,
-        type,
-        name,
-        morning,
-        evening,
-        frequency,
-        startDate,
-        endDate
-      );
+        rebuilt = new MedicineReminder(
+          id,
+          type,
+          name,
+          morning,
+          evening,
+          frequency,
+          startDate,
+          endDate
+        );
 
-      // push the rebuilt objects as classes into the main arr
-      this.#medReminders.push(rebuilt);
+        // push the rebuilt objects as classes into the main arr
+        this.#medReminders.push(rebuilt);
 
-      // Render a new card
-      this._renderNewMed(rebuilt);
+        this._renderNewMed(rebuilt);
 
-      // Set the objects to storage
-      this._setLocalStorage();
+        this._setLocalStorage();
 
-      // WORKS! local storage is rebuilt with the correct class
-      console.log(rebuilt.constructor.name);
+        console.log(rebuilt.constructor.name);
+      }
     });
-
-    // I need to rebuild the objects from local storage as the class
-    // Upon creating a new object from the class, the ID will change
+    console.log(`Objects have been rebuilt`);
   }
 
   _formatDate(dateObj) {
     let date = dateObj.toString().slice(3, 15);
     return date;
-  }
-
-  _removeExpiredMeds() {
-    // compare todays date with the endDate
-    let today = new Date();
-    let todayStr = this._formatDate(today);
-
-    this.#medReminders = this.#medReminders.filter(
-      (med) => med.endDate != todayStr
-    );
-    // console.log(this.#medReminders);
-
-    this._setLocalStorage(this.#medReminders);
-
-    // I have 2 reload twice in order for the correct cards to poplate from the updated array
   }
 }
 const app = new App();
