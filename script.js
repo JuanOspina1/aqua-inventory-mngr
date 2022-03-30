@@ -45,11 +45,14 @@ class App {
     const validInputs = (...inputs) =>
       inputs.every((inp) => Number.isFinite(inp));
 
+    const allPositive = (...inputs) => inputs.every((inp) => inp >= 0);
+
     e.preventDefault();
-    // Need to confirm that all fields have been entered except for both morning and evening
+
+    // Capilatize the type and name
     const type = this._titleCase(medType.value);
     const name = this._titleCase(medName.value);
-    // Need to confirm that these are whole, positive numbers - I validate below before creating the object
+
     const morning = +medPerDayMorning.value;
     const evening = +medPerDayEvening.value;
 
@@ -58,21 +61,35 @@ class App {
     // Due to the way the picker works, I need to modify the value so it reads the correct date
     const startDateObj = new Date(medStartDate.value.replace(/-/g, "/"));
     const endDateObj = new Date(medEndDate.value.replace(/-/g, "/"));
-    console.log(medStartDate.value);
-    console.log(startDateObj);
+    console.log(startDateObj.getTime());
+    console.log(endDateObj.getTime());
 
     const startDate = this._formatDate(startDateObj);
     const endDate = this._formatDate(endDateObj);
 
     const id = (Date.now() + "").slice(-10);
-    // console.log(type, name, morning, evening, frequency, startDate, endDate);
-
-    // Need to verify inputs
 
     let medicine;
 
-    if (!validInputs(morning, evening))
-      return alert("Morning & evenings dosages need to be positive numbers!");
+    // validate inputs and confirm that all fields are filled
+    if (
+      !name ||
+      startDate === "alid Date" ||
+      endDate === "alid Date" ||
+      !validInputs(morning, evening) ||
+      !allPositive(morning, evening)
+    )
+      return alert(
+        "Please fill out all fields. Morning & evenings dosages need to be positive numbers!"
+      );
+
+    // Check if the end date is on or after the start date
+    // If this fails once, the alert keeps coming up
+    if (startDateObj.getTime() > endDateObj.getTime())
+      return alert(
+        "The end date must be the same or later than the start date"
+      );
+
     medicine = new MedicineReminder(
       id,
       type,
@@ -184,7 +201,7 @@ class App {
     const data = JSON.parse(localStorage.getItem("medicines"));
     // console.log(data);
 
-    if (!data) return console.log("No objects to rebuild");
+    if (!data) return;
 
     // Set array to empty
     this.#medReminders = [];
