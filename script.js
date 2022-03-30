@@ -1,5 +1,8 @@
 "use strict";
+
+// Possible API for medication names : https://clinicaltables.nlm.nih.gov/apidoc/rxterms/v3/doc.html
 class MedicineReminder {
+  // Need to figure out how to find this ID via the click event
   id = (Date.now() + "").slice(-10);
 
   constructor(type, name, morning, evening, frequency, startDate, endDate) {
@@ -31,10 +34,8 @@ class App {
   #medReminders = [];
 
   constructor() {
-    //Get data from local storage
+    //Get data from local storage - I need to update this so the object is create again using the class
     this._getLocalStorage();
-
-    this._removeExpiredMeds();
 
     //Attach event handlers
     submitBtn.addEventListener("click", this._submitMedName.bind(this));
@@ -42,29 +43,30 @@ class App {
   }
 
   _submitMedName = function (e) {
+    // Collecting inputs from the form and validation of inputs
     const validInputs = (...inputs) =>
       inputs.every((inp) => Number.isFinite(inp));
 
     e.preventDefault();
+    // Need to confirm that all fields have been entered except for both morning and evening
     const type = this._titleCase(medType.value);
-    //Need to capitalize this input
     const name = this._titleCase(medName.value);
-    // Need to confirm that these are whole, positive numbers
+    // Need to confirm that these are whole, positive numbers - I validate below before creating the object
     const morning = +medPerDayMorning.value;
     const evening = +medPerDayEvening.value;
 
     const frequency = this._titleCase(medFrequency.value);
-    // convert these back to a string using the method below
-    const startDateObj = new Date(medStartDate.value);
-    const endDateObj = new Date(medEndDate.value);
+    // Convert these back to a string using the method below
+    // Due to the way the picker works, I need to modify the value so it reads the correct date
+    const startDateObj = new Date(medStartDate.value.replace(/-/g, "/"));
+    const endDateObj = new Date(medEndDate.value.replace(/-/g, "/"));
+    console.log(medStartDate.value);
+    console.log(startDateObj);
 
     const startDate = this._formatDate(startDateObj);
     const endDate = this._formatDate(endDateObj);
 
-    // const startDateStr = startDate.toString();
-
-    console.log(type, name, morning, evening, frequency, startDate, endDate);
-    console.log(typeof startDate);
+    // console.log(type, name, morning, evening, frequency, startDate, endDate);
 
     // Need to verify inputs
 
@@ -85,17 +87,20 @@ class App {
     // Push the new medicine into the reminders array
     this.#medReminders.push(medicine);
 
+    // Empty the forms after receiving inputs
     this._emptyForm();
 
+    // Render a new card
     this._renderNewMed(medicine);
-    console.log(this.#medReminders);
+    // console.log(this.#medReminders);
 
+    // Set the new card to storage - in the future this will be a database instead of local
     this._setLocalStorage();
   };
 
   _renderNewMed(medicine) {
     let html = `
-    <li>
+    <li data-id='${medicine.id}'>
         <article class="medicine">
           
           <div class="medicine__data">
@@ -133,11 +138,11 @@ class App {
     `;
     medContainer.insertAdjacentHTML("afterbegin", html);
 
+    // Button even handler attached AFTER it is created
     const singleDeleteBtn = document.querySelector(".single__delete__btn");
     singleDeleteBtn.addEventListener("click", this._deleteSingle.bind(this));
   }
 
-  // test comment to commit
   _emptyForm = function () {
     medName.value = "";
     medPerDayMorning.value = "";
@@ -153,8 +158,19 @@ class App {
     medName.focus();
   };
 
+  // Still pending this feature
   _deleteSingle(e) {
     e.preventDefault();
+    let id = e.path[3].dataset.id;
+    this.#medReminders = this.#medReminders.filter((med) => med.id != id);
+
+    this._setLocalStorage();
+
+    // This removes everything
+    medContainer.innerHTML = "";
+
+    // This repopulates the cards based on the new local storage
+    this._getLocalStorage();
   }
 
   _titleCase(str) {
@@ -172,6 +188,8 @@ class App {
     if (!data) return;
 
     this.#medReminders = data;
+    this._removeExpiredMeds();
+
     this.#medReminders.forEach((med) => {
       this._renderNewMed(med);
     });
@@ -183,14 +201,14 @@ class App {
   }
 
   _removeExpiredMeds() {
-    // Need to find a way to compare today with the endDate in the object
+    // compare todays date with the endDate
     let today = new Date();
     let todayStr = this._formatDate(today);
 
     this.#medReminders = this.#medReminders.filter(
       (med) => med.endDate != todayStr
     );
-    console.log(this.#medReminders);
+    // console.log(this.#medReminders);
 
     this._setLocalStorage(this.#medReminders);
 
