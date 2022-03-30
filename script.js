@@ -2,10 +2,8 @@
 
 // Possible API for medication names : https://clinicaltables.nlm.nih.gov/apidoc/rxterms/v3/doc.html
 class MedicineReminder {
-  // Need to figure out how to find this ID via the click event
-  id = (Date.now() + "").slice(-10);
-
-  constructor(type, name, morning, evening, frequency, startDate, endDate) {
+  constructor(id, type, name, morning, evening, frequency, startDate, endDate) {
+    this.id = id;
     this.type = type;
     this.name = name;
     this.morning = morning;
@@ -66,6 +64,7 @@ class App {
     const startDate = this._formatDate(startDateObj);
     const endDate = this._formatDate(endDateObj);
 
+    const id = (Date.now() + "").slice(-10);
     // console.log(type, name, morning, evening, frequency, startDate, endDate);
 
     // Need to verify inputs
@@ -75,6 +74,7 @@ class App {
     if (!validInputs(morning, evening))
       return alert("Morning & evenings dosages need to be positive numbers!");
     medicine = new MedicineReminder(
+      id,
       type,
       name,
       morning,
@@ -158,7 +158,6 @@ class App {
     medName.focus();
   };
 
-  // Still pending this feature
   _deleteSingle(e) {
     e.preventDefault();
     let id = e.path[3].dataset.id;
@@ -183,16 +182,56 @@ class App {
 
   _getLocalStorage() {
     const data = JSON.parse(localStorage.getItem("medicines"));
-    // console.log(data);
+    console.log(data);
 
     if (!data) return;
 
-    this.#medReminders = data;
-    this._removeExpiredMeds();
+    // Current
+    // this.#medReminders = data;
+    // this._removeExpiredMeds();
 
-    this.#medReminders.forEach((med) => {
-      this._renderNewMed(med);
+    // this.#medReminders.forEach((med) => {
+    //   this._renderNewMed(med);
+    // });
+
+    data.forEach((med) => {
+      let rebuilt;
+
+      const id = med.id;
+      const type = med.type;
+      const name = med.name;
+      const morning = med.morning;
+      const evening = med.evening;
+      const frequency = med.frequency;
+      const startDate = med.startDate;
+      const endDate = med.endDate;
+
+      rebuilt = new MedicineReminder(
+        id,
+        type,
+        name,
+        morning,
+        evening,
+        frequency,
+        startDate,
+        endDate
+      );
+
+      // push the rebuilt objects as classes into the main arr
+      this.#medReminders.push(rebuilt);
+
+      // Render a new card
+      this._renderNewMed(rebuilt);
+
+      // Set the objects to storage
+      this._setLocalStorage();
+
+      // WORKS! local storage is rebuilt with the correct class
+      console.log(rebuilt.constructor.name);
     });
+
+    // I need to rebuild the objects from local storage as the class
+    // Upon creating a new object from the class, the ID will change
   }
 
   _formatDate(dateObj) {
